@@ -36,6 +36,9 @@ services:
     pulsechaincom_consensus:
         container_name: beacon_mainnet
         #network_mode: host
+        restart: unless-stopped
+        depends_on:
+          - pulsechaincom_execution
         ports:
             - '4000:4000/tcp'
             - '12000:12000/udp'
@@ -59,6 +62,10 @@ services:
     pulsechaincom_validator:
         container_name: validator_mainnet
         #network_mode: host
+        restart: unless-stopped
+        depends_on:
+          - pulsechaincom_execution
+          - pulsechaincom_consensus
         volumes:
             - '/home/dynames/blockchain/validator_keys:/keys'
             - '/home/dynames/blockchain/pw:/wallet'
@@ -67,4 +74,4 @@ services:
           - --pulsechain
           - --wallet-dir=/wallet
           - --wallet-password-file=/wallet/pw.txt
-          - --graffiti crypto_whitexicans
+          - --graffiti crypto.whitexicans
