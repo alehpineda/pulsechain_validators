@@ -1,4 +1,4 @@
-# docker run -d --name geth --network=host -p 30303:30303 -p 8545:8545 -v /home/admxn/blockchain:/blockchain 
+# docker run -d --name geth --network=host -p 30303:30303 -p 8545:8545 -v /home/dynames/blockchain:/blockchain 
 # registry.gitlab.com/pulsechaincom/go-pulse:latest --pulsechain --authrpc.jwtsecret=/blockchain/jwt.hex --datadir=/blockchain
 
 version: '3.8'
@@ -26,23 +26,22 @@ services:
           - --authrpc.addr=0.0.0.0
           - --authrpc.port=8551
           - --authrpc.vhosts=*
-         #- --http.corsdomain=[read below]
-         # moz-extension://bc4203c1-3111-420f-9585-566925948b6e
+          - --http.corsdomain=chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn, moz-extension://bc4203c1-3111-420f-9585-566925948b6e
 
-# sudo docker run -d --name beacon --network=host -p 4000:4000/tcp -p 12000:12000/udp -p 13000:13000/tcp -v /home/admxn/blockchain:/blockchain 
+# sudo docker run -d --name beacon --network=host -p 4000:4000/tcp -p 12000:12000/udp -p 13000:13000/tcp -v /home/dynames/blockchain:/blockchain 
 # registry.gitlab.com/pulsechaincom/prysm-pulse/beacon-chain:latest --pulsechain --jwt-secret=/blockchain/jwt.hex --datadir=/blockchain 
 # --checkpoint-sync-url=https://checkpoint.pulsechain.com --genesis-beacon-api-url=https://checkpoint.pulsechain.com 
-# --suggested-fee-recipient=0x25f8Aaa00744cc0f67e64E81F876a699340962dD --min-sync-peers=1 
+# --suggested-fee-recipient=PLS_ADDR --min-sync-peers=1 
 
     pulsechaincom_consensus:
         container_name: beacon_mainnet
-        network_mode: host
+        #network_mode: host
         ports:
             - '4000:4000/tcp'
             - '12000:12000/udp'
             - '13000:13000/tcp'
         volumes:
-            - '/home/admxn/blockchain:/blockchain'
+            - '/home/dynames/blockchain:/blockchain'
         image: 'registry.gitlab.com/pulsechaincom/prysm-pulse/beacon-chain:latest'
         command:
           - --pulsechain
@@ -50,19 +49,19 @@ services:
           - --datadir=/blockchain
           - --checkpoint-sync-url=https://checkpoint.pulsechain.com
           - --genesis-beacon-api-url=https://checkpoint.pulsechain.com
-          - --suggested-fee-recipient=0x25f8Aaa00744cc0f67e64E81F876a699340962dD
+          - --suggested-fee-recipient=$PLS_ADDR
           - --min-sync-peers=1
 
-# sudo docker run -d --name validator --network=host -v /home/admxn/blockchain/validator_keys:/keys -v /home/admxn/blockchain/pw:/wallet 
+# sudo docker run -d --name validator --network=host -v /home/dynames/blockchain/validator_keys:/keys -v /home/dynames/blockchain/pw:/wallet 
 # registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest --pulsechain --wallet-dir=/wallet --wallet-password-file=/wallet/pw.txt 
 # --graffiti validatorstore.com
 
     pulsechaincom_validator:
         container_name: validator_mainnet
-        network_mode: host
+        #network_mode: host
         volumes:
-            - '/home/admxn/blockchain/validator_keys:/keys'
-            - '/home/admxn/blockchain/pw:/wallet'
+            - '/home/dynames/blockchain/validator_keys:/keys'
+            - '/home/dynames/blockchain/pw:/wallet'
         image: 'registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest'
         command:
           - --pulsechain

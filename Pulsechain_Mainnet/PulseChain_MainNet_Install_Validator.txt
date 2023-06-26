@@ -1,10 +1,13 @@
-*You MUST change on lines 39 and 55 the ETH/PLS address to earn rewards (otherwise it burns)! You can change the --num_validators= wallets on line 55 if you want more than one. Optionally you can change line 65 graffiti to yours or leave it as validatorstore.com to show your support. If your username is not admxn then you must replace admxn with your username for all folder paths in the script, search for admxn using CTRL+F and replace all instances of admxn with your username*
+*You MUST change on lines 39 and 55 the ETH/PLS address to earn rewards (otherwise it burns)! You can change the --num_validators= wallets on line 55 
+*if you want more than one. Optionally you can change line 65 graffiti to yours or leave it as validatorstore.com to show your support. 
+*If your username is not dynames then you must replace dynames with your username for all folder paths in the script, search for dynames using CTRL+F and 
+*replace all instances of dynames with your username*
 
-sudo apt-get update -y && sudo apt-get upgrade -y
+sudo apt update -y && sudo apt upgrade -y
 
-sudo apt-get dist-upgrade -y && sudo apt autoremove -y
+sudo apt dist-upgrade -y && sudo apt autoremove -y
 
-sudo apt-get install apt-transport-https ca-certificates curl gnupg git ufw openssl lsb-release -y
+sudo apt install apt-transport-https ca-certificates curl gnupg git ufw openssl lsb-release -y
 
 sudo ufw allow 30303 && sudo ufw allow 12000 && sudo ufw allow 13000
 
@@ -12,9 +15,9 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o 
 
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get update -y
+sudo apt update
 
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose
 
 mkdir blockchain && sudo chmod 777 blockchain
 
@@ -32,11 +35,11 @@ cd ~
 
 openssl rand -hex 32 | sudo tee blockchain/jwt.hex > /dev/null
 
-sudo docker run -d --name geth --network=host -p 30303:30303 -p 8545:8545 -v /home/admxn/blockchain:/blockchain registry.gitlab.com/pulsechaincom/go-pulse:latest --pulsechain --authrpc.jwtsecret=/blockchain/jwt.hex --datadir=/blockchain
+sudo docker run -d --name geth --network=host -p 30303:30303 -p 8545:8545 -v /home/dynames/blockchain:/blockchain registry.gitlab.com/pulsechaincom/go-pulse:latest --pulsechain --authrpc.jwtsecret=/blockchain/jwt.hex --datadir=/blockchain
 
 *Replace ETH/PLS address with YOUR address to earn rewards (otherwise it burns)*
 
-sudo docker run -d --name beacon --network=host -p 4000:4000/tcp -p 12000:12000/udp -p 13000:13000/tcp -v /home/admxn/blockchain:/blockchain registry.gitlab.com/pulsechaincom/prysm-pulse/beacon-chain:latest --pulsechain --jwt-secret=/blockchain/jwt.hex --datadir=/blockchain --checkpoint-sync-url=https://checkpoint.pulsechain.com --genesis-beacon-api-url=https://checkpoint.pulsechain.com --suggested-fee-recipient=0x25f8Aaa00744cc0f67e64E81F876a699340962dD --min-sync-peers=1 
+sudo docker run -d --name beacon --network=host -p 4000:4000/tcp -p 12000:12000/udp -p 13000:13000/tcp -v /home/dynames/blockchain:/blockchain registry.gitlab.com/pulsechaincom/prysm-pulse/beacon-chain:latest --pulsechain --jwt-secret=/blockchain/jwt.hex --datadir=/blockchain --checkpoint-sync-url=https://checkpoint.pulsechain.com --genesis-beacon-api-url=https://checkpoint.pulsechain.com --suggested-fee-recipient=0x5dBC1310e78F714058765022fF9a717e652b1e11 --min-sync-peers=1 
 
 git clone https://gitlab.com/pulsechaincom/staking-deposit-cli.git
 
@@ -52,17 +55,17 @@ sudo ./deposit.sh install
 
 *Replace ETH/PLS address with YOUR address to earn rewards (otherwise it burns), change the --num_validators= wallets if you want more than 1*
 
-sudo ./deposit.sh new-mnemonic --num_validators=1 --chain=pulsechain --folder=/home/admxn/blockchain/ --eth1_withdrawal_address=0x25f8Aaa00744cc0f67e64E81F876a699340962dD
+sudo ./deposit.sh new-mnemonic --num_validators=1 --chain=pulsechain --folder=/home/dynames/blockchain/ --eth1_withdrawal_address=0x5dBC1310e78F714058765022fF9a717e652b1e11
 
 cd ~
 
-sudo docker run -it --name validator -v /home/admxn/blockchain/validator_keys:/keys -v /home/admxn/blockchain/pw:/wallet registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest accounts import --keys-dir=/keys --wallet-dir=/wallet --pulsechain
+sudo docker run -it --name validator -v /home/dynames/blockchain/validator_keys:/keys -v /home/dynames/blockchain/pw:/wallet registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest accounts import --keys-dir=/keys --wallet-dir=/wallet --pulsechain
 
 sudo docker stop -t 180 validator
 
 sudo docker container prune -f
 
-sudo docker run -d --name validator --network=host -v /home/admxn/blockchain/validator_keys:/keys -v /home/admxn/blockchain/pw:/wallet registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest --pulsechain --wallet-dir=/wallet --wallet-password-file=/wallet/pw.txt --graffiti validatorstore.com
+sudo docker run -d --name validator --network=host -v /home/dynames/blockchain/validator_keys:/keys -v /home/dynames/blockchain/pw:/wallet registry.gitlab.com/pulsechaincom/prysm-pulse/validator:latest --pulsechain --wallet-dir=/wallet --wallet-password-file=/wallet/pw.txt --graffiti validatorstore.com
 
 sudo docker update --restart always geth
 
